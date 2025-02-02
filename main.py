@@ -1,3 +1,6 @@
+from render import render
+from generate_map import generate_map
+from generate_figure import generate_figure
 import pygame
 
 running = True
@@ -13,67 +16,38 @@ CELL_W = int((width * 0.30) / 8)
 
 map = []
 
-class Cell:
-    def __init__(self, x, y, color=None):
-        self.x = LEFT + x * CELL_W
-        self.y = TOP + y * CELL_H
-        self.color = color
-        if color is None:
-            self.status = True
-        else:
-            self.status = False
+generate_map(map)
 
-    def change(self, color):
-        if self.status or (color is None):
-            self.color = color
-            return [0]
-        else:
-            return [1, self.status, color]
+render(screen, map, LEFT, TOP, CELL_W, CELL_H)
 
-    def draw(self, screen):
-        rect = pygame.Rect(self.x, self.y, CELL_W, CELL_H)
-
-        if self.color is not None:
-            pygame.draw.rect(screen, self.color, rect)
-
-        pygame.draw.rect(screen, "black", rect, 2)
-
-
-for i in range(8):
-    columns = []
-    for j in range(8):
-        columns.append(Cell(i, j, None))
-    map.append(columns)
-
-
-def render():
-    pygame.draw.rect(screen, [139, 69, 19], pygame.Rect(LEFT, TOP, CELL_W * 8, CELL_H * 8))
-
-    pygame.draw.lines(
-        screen,
-        'black',
-        True,
-        [
-            (LEFT, TOP),
-            (LEFT + CELL_W * 8, TOP),
-            (LEFT + CELL_W * 8, TOP + CELL_H * 8),
-            (LEFT, TOP + CELL_H * 8)
-        ],
-        3
-    )
-
-    for row in map:
-        for cell in row:
-            cell.draw(screen)
-
+figures = 0
+current_figure = None
 
 while running:
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_s:
+                current_figure.move_figure(0, 1)
+            elif event.key == pygame.K_w:
+                current_figure.move_figure(0, -1)
+            elif event.key == pygame.K_d:
+                current_figure.move_figure(1, 0)
+            elif event.key == pygame.K_a:
+                current_figure.move_figure(-1, 0)
+            elif event.key == pygame.K_SPACE:
+                map, op = current_figure.place_figure(map)
+                if op:
+                    current_figure = None
 
     screen.fill([210, 105, 30])
-    render()
+    render(screen, map, LEFT, TOP, CELL_W, CELL_H)
+    if current_figure:
+        current_figure.draw(screen)
+    else:
+        figures += 1
+        current_figure = generate_figure(figures, map)
     pygame.display.flip()
-
 pygame.quit()
