@@ -10,6 +10,7 @@ LEFT = int(width * 0.35)
 CELL_H = int((height * 0.55) / 8)
 CELL_W = int((width * 0.30) / 8)
 
+pygame.quit()
 
 class Cell:
     def __init__(self, x, y, color=None):
