@@ -1,7 +1,13 @@
 class Figure:
     def __init__(self, id, *cells):
         self.id_figure = id
-        self.figure = [i for i in cells]
+        self.figure = []
+        for cell_list in cells:
+            if isinstance(cell_list, list):
+                self.figure.extend(cell_list)
+            else:
+                self.figure.append(cell_list)
+
 
     def draw(self, screen):
         for i in self.figure:
